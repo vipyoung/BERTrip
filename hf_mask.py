@@ -1,15 +1,16 @@
-from transformers import pipeline, AutoModelForPreTraining, AutoTokenizer
+from transformers import pipeline, AutoModelForMaskedLM, AutoTokenizer
 from random import randint
 from collections import Counter
+import torch
 
-unmasker = pipeline('fill-mask', model='./models/215000')
+#unmasker = pipeline('fill-mask', model='./models/215000')
 #unmasker = pipeline('fill-mask', model='./models/92500')
 
-#model = AutoModelForMaskedLM.from_pretrained('./models/92500')
+model = AutoModelForMaskedLM.from_pretrained('./models/215000')
 
 #model = AutoModelForPreTraining.from_pretrained('./models/92500')
-#tokenizer = AutoTokenizer.from_pretrained("./models/92500")
-#unmasker = pipeline('fill-mask', model=model, tokenizer=tokenizer)
+tokenizer = AutoTokenizer.from_pretrained("./models/215000")
+unmasker = pipeline('fill-mask', model=model, tokenizer=tokenizer)
 
 masked = []
 sentences = []
@@ -56,6 +57,22 @@ traj = ("8a536bc8b697fff 8a536b524aeffff 8a536b524337fff " +\
 "8a536b5243a7fff " +\
 "8a536bc8942ffff 8a536bc8972ffff 8a536bc89367fff 8a536bcd4197fff "+\
 "8a536bcd4a57fff 8a536bcd5d97fff").split(' ')
+pos = 4
+traj.insert(pos, '[MASK]')
+
+tt = ' '.join(traj)
+sentences = tt.strip()
+print('Sent:', sentences)
+inputs = tokenizer.encode_plus(sentences, add_special_tokens=True, return_tensors="pt")
+print("SOfiane;", inputs)
+device = torch.device('cpu')
+prediction = model(inputs['input_ids'].to(device), 
+        token_type_ids=inputs['token_type_ids'].to(device))
+
+        #token_type_ids=inputs['token_type_ids'].to(self.device))[0].argmax().item()
+print("Preds:", prediction[0].shape)
+print("Label:", tokenizer.convert_ids_to_tokens(prediction))
+sys.exit()
 
 pos = 4
 traj.insert(pos, '[MASK]')
