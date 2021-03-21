@@ -1,6 +1,6 @@
 # BERTrip
 BERTrip: Language model for trips
-
+Use python 3.
 
 ## Prepare data
 - Get trajectories from mongodb
@@ -12,14 +12,27 @@ BERTrip: Language model for trips
 - Use this collab https://colab.research.google.com/drive/1thO6_T063xOR2o6_yCdVxKmyQYsTeG3v#scrollTo=RiFH_9Lbze5f
 
 ## Copy data to local machine:
-- `~/tools/google-cloud-sdk/bin/gsutil -m cp   "gs://bertrip/bert_model/bert_config.json"   "gs://bertrip/bert_model/model.ckpt-92500.data-00000-of-00001"   "gs://bertrip/bert_model/model.ckpt-92500.index"   "gs://bertrip/bert_model/model.ckpt-92500.meta"   "gs://bertrip/bert_model/vocab.txt"   .`
+* `~/tools/google-cloud-sdk/bin/gsutil -m cp   "gs://bertrip/bert_model/bert_config.json"   "gs://bertrip/bert_model/model.ckpt-92500.data-00000-of-00001"   "gs://bertrip/bert_model/model.ckpt-92500.index"   "gs://bertrip/bert_model/model.ckpt-92500.meta"   "gs://bertrip/bert_model/vocab.txt"   .`
 
-- Convert tensorflow checkpoints into PyTorch save file as follows:
--- export BERT_BASE_DIR='models/92500'
--- transformers-cli convert --model_type bert \
+## Convert tensorflow checkpoints into PyTorch save file as follows:
+* export BERT_BASE_DIR='models/92500'
+* transformers-cli convert --model_type bert \
   --tf_checkpoint $BERT_BASE_DIR/bert_model.ckpt \
   --config $BERT_BASE_DIR/bert_config.json \
   --pytorch_dump_output $BERT_BASE_DIR/pytorch_model.bin
+
+## Run unmasker locally:
+* create virtualenv: python3 -m venv venv
+* activate it: . venv/bin/activate
+* install packages: pip install -r requirements
+* run example: python hf_unmasker.py
+
+# Finetune a downstream task for ETA prediction
+The objective here is: given a trajectory, find its ETA.
+At first, we finetune on trajectories starting all at the same hour, e.g., 8am.
+We can finetune other models for other hours.
+* check code in (not working 100%): python hf_train_eta.py 
+
 
 # Deployment on TorchServer
 - Use Docker
