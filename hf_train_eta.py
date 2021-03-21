@@ -93,6 +93,11 @@ if __name__ == "__main__":
 
 
     # Load model
+    # Sofiane: I"m fixing the number of labels to 1 to tell transformers that
+    # we're doing regression not classification. You can find this in the
+    # documentation of BertForSequenceClassification. However, there are two
+    # ways to do it, as in line 100 and line 102. Not sure which one is better.
+    # For safety, I'm doing it in both. 
     model = BertForSequenceClassification.from_pretrained("./models/215000",
             num_labels=1)
     model.config.__dict__['num_labels'] = 1
