@@ -15,7 +15,30 @@ Use python 3.
 * `~/tools/google-cloud-sdk/bin/gsutil -m cp   "gs://bertrip/bert_model/bert_config.json"   "gs://bertrip/bert_model/model.ckpt-92500.data-00000-of-00001"   "gs://bertrip/bert_model/model.ckpt-92500.index"   "gs://bertrip/bert_model/model.ckpt-92500.meta"   "gs://bertrip/bert_model/vocab.txt"   .`
 
 ## Convert tensorflow checkpoints into PyTorch save file as follows:
-* export BERT_BASE_DIR='models/92500'
+* create a `config.json` from `bert_config.json` by adding: `"model_type": "bert"`
+```json
+{
+  "attention_probs_dropout_prob": 0.1,
+  "directionality": "bidi",
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "model_type": "bert",
+  "max_position_embeddings": 512,
+  "num_attention_heads": 12, 
+  "num_hidden_layers": 12, 
+  "pooler_fc_size": 768,
+  "pooler_num_attention_heads": 12, 
+  "pooler_num_fc_layers": 3,
+  "pooler_size_per_head": 128,
+  "pooler_type": "first_token_transform",
+  "type_vocab_size": 2,
+  "vocab_size": 32000
+}
+```
+* export BERT_BASE_DIR='models'
 * transformers-cli convert --model_type bert \
   --tf_checkpoint $BERT_BASE_DIR/bert_model.ckpt \
   --config $BERT_BASE_DIR/bert_config.json \
